@@ -15,8 +15,6 @@
  */
 namespace randomhost\Icinga\Checks\Minecraft;
 
-use randomhost\Icinga\Check;
-
 /**
  * Checks the player count of the Minecraft server
  *
@@ -55,7 +53,7 @@ EOT
     /**
      * Check the amount of players on the Minecraft server.
      *
-     * @see CheckBase::check()
+     * @see Base::check()
      *
      * @return void
      */
@@ -69,37 +67,37 @@ EOT
 
             if ('success' !== $response['result'] || !isset($response['success'])) {
                 $this->setMessage('No result from JSON API.');
-                $this->setCode(Check::SERVICE_STATE_UNKNOWN);
+                $this->setCode(self::STATE_UNKNOWN);
             } elseif ($response['success'] >= (int)$options['thresholdWarning']
             ) {
                 $this->setMessage(
                     sprintf(
-                        'CRITICAL - %u players currently logged in',
+                        'CRITICAL - %1$u players currently logged in|users=%1$u',
                         $response['success']
                     )
                 );
-                $this->setCode(Check::SERVICE_STATE_CRITICAL);
+                $this->setCode(self::STATE_CRITICAL);
             } elseif ($response['success'] >= (int)$options['thresholdWarning']
             ) {
                 $this->setMessage(
                     sprintf(
-                        'WARNING - %u players currently logged in',
+                        'WARNING - %u players currently logged in|users=%1$u',
                         $response['success']
                     )
                 );
-                $this->setCode(Check::SERVICE_STATE_WARNING);
+                $this->setCode(self::STATE_WARNING);
             } else {
                 $this->setMessage(
                     sprintf(
-                        'OK - %u players currently logged in',
+                        'OK - %u players currently logged in|users=%1$u',
                         $response['success']
                     )
                 );
-                $this->setCode(Check::SERVICE_STATE_OK);
+                $this->setCode(self::STATE_OK);
             }
         } catch (\Exception $e) {
             $this->setMessage('Error from JSONAPI: ' . $e->getMessage());
-            $this->setCode(Check::SERVICE_STATE_UNKNOWN);
+            $this->setCode(self::STATE_UNKNOWN);
         }
     }
 } 

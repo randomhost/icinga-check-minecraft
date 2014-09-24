@@ -84,13 +84,13 @@ EOT
     }
     
     /**
-     * Reads command line options and performs pre-check tasks.
+     * Reads command line options and performs pre-run tasks.
      *
      * @return void
      */
-    protected function preCheck()
+    protected function preRun()
     {
-        parent::preCheck();
+        parent::preRun();
 
         $options = $this->getOptions();
 
