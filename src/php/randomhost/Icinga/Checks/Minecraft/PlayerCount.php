@@ -40,10 +40,7 @@ class PlayerCount extends Base
 Icinga plugin for checking Minecraft services.
 
 --host              Minecraft server IP address or hostname
---port              JSONAPI port
---user              JSONAPI user
---password          JSONAPI password
---salt              JSONAPI salt
+--port              Query port
 --thresholdWarning  Player threshold to trigger the WARNING state
 --thresholdCritical Player threshold to trigger the CRITICAL state
 EOT
@@ -63,12 +60,14 @@ EOT
             $options = $this->getOptions();
             
             // retrieve player count
-            $response = $this->jsonAPI->call('getPlayerCount');
+            $response = $this->mcStatus->query(true);
 
-            if ('success' !== $response['result'] || !isset($response['success'])) {
-                $this->setMessage('No result from JSON API.');
+            if (!is_array($response)
+                || !array_key_exists('player_count', $response)
+            ) {
+                $this->setMessage('No response from Minecraft server query.');
                 $this->setCode(self::STATE_UNKNOWN);
-            } elseif ($response['success'] >= (int)$options['thresholdWarning']
+            } elseif ($response['player_count'] >= (int)$options['thresholdWarning']
             ) {
                 $this->setMessage(
                     sprintf(
@@ -77,7 +76,7 @@ EOT
                     )
                 );
                 $this->setCode(self::STATE_CRITICAL);
-            } elseif ($response['success'] >= (int)$options['thresholdWarning']
+            } elseif ($response['player_count'] >= (int)$options['thresholdWarning']
             ) {
                 $this->setMessage(
                     sprintf(
@@ -90,13 +89,13 @@ EOT
                 $this->setMessage(
                     sprintf(
                         'OK - %u players currently logged in|users=%1$u',
-                        $response['success']
+                        $response['player_count']
                     )
                 );
                 $this->setCode(self::STATE_OK);
             }
         } catch (\Exception $e) {
-            $this->setMessage('Error from JSONAPI: ' . $e->getMessage());
+            $this->setMessage('Error from Mcstat: ' . $e->getMessage());
             $this->setCode(self::STATE_UNKNOWN);
         }
     }

@@ -16,7 +16,7 @@
 namespace randomhost\Icinga\Checks\Minecraft;
 
 use randomhost\Icinga\Checks\Base as CheckBase;
-use randomhost\thirdparty\JSONAPI;
+use winny\Mcstat\Status;
 
 /**
  * Base class for Minecraft Icinga plugins
@@ -32,11 +32,11 @@ use randomhost\thirdparty\JSONAPI;
 abstract class Base extends CheckBase
 {
     /**
-     * Instance of JSONAPI class
+     * Instance of winny\Mcstat\Status class
      *
-     * @var JSONAPI
+     * @var Status
      */
-    protected $jsonAPI = null;
+    protected $mcStatus = null;
 
     /**
      * Constructor for this class.
@@ -48,9 +48,6 @@ abstract class Base extends CheckBase
             array(
                 'host:',
                 'port:',
-                'user:',
-                'password:',
-                'salt:',
                 'thresholdWarning:',
                 'thresholdCritical:'
             )
@@ -60,9 +57,6 @@ abstract class Base extends CheckBase
             array(
                 'host',
                 'port',
-                'user',
-                'password',
-                'salt',
                 'thresholdWarning',
                 'thresholdCritical'
             )
@@ -73,10 +67,7 @@ abstract class Base extends CheckBase
 Icinga plugin for checking Minecraft services.
 
 --host              Minecraft server IP address or hostname
---port              JSONAPI port
---user              JSONAPI user
---password          JSONAPI password
---salt              JSONAPI salt
+--port              Query port
 --thresholdWarning  Threshold to trigger the WARNING state
 --thresholdCritical Threshold to trigger the CRITICAL state
 EOT
@@ -94,13 +85,10 @@ EOT
 
         $options = $this->getOptions();
 
-        // load JSONAPI client
-        $this->jsonAPI = new JSONAPI(
+        // load Mcstat Status class
+        $this->mcStatus = new Status(
             $options['host'],
-            $options['port'],
-            $options['user'],
-            $options['password'],
-            $options['salt']
+            $options['port']
         );
     }
 } 
