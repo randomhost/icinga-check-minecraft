@@ -1,39 +1,26 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+namespace randomhost\Icinga\Check\Minecraft;
+
+use randomhost\Minecraft\Status;
 
 /**
- * PlayerCount class definition
+ * Checks the player count of the Minecraft server.
  *
- * PHP version 5
- *
- * @category  Monitoring
- * @package   PHP_Icinga_Minecraft
  * @author    Ch'Ih-Yu <chi-yu@web.de>
- * @copyright 2014 random-host.com
+ * @copyright 2016 random-host.com
  * @license   http://www.debian.org/misc/bsd.license BSD License (3 Clause)
- * @link      https://pear.random-host.com/
- */
-namespace randomhost\Icinga\Checks\Minecraft;
-
-/**
- * Checks the player count of the Minecraft server
- *
- * @category  Monitoring
- * @package   PHP_Icinga_Minecraft
- * @author    Ch'Ih-Yu <chi-yu@web.de>
- * @copyright 2014 random-host.com
- * @license   http://www.debian.org/misc/bsd.license  BSD License (3 Clause)
- * @version   Release: @package_version@
- * @link      https://pear.random-host.com/
+ * @link      http://github.random-host.com/icinga-check-minecraft/
  */
 class PlayerCount extends Base
 {
     /**
-     * Constructor for this class.
+     * Constructor.
+     *
+     * @param Status $mcStatus \randomhost\Minecraft\Status instance.
      */
-    function __construct()
+    public function __construct(Status $mcStatus)
     {
-        parent::__construct();
+        parent::__construct($mcStatus);
 
         $this->setHelp(
             <<<EOT
@@ -52,13 +39,13 @@ EOT
      *
      * @see Base::check()
      *
-     * @return void
+     * @return $this
      */
     protected function check()
     {
         try {
             $options = $this->getOptions();
-            
+
             // retrieve player count
             $response = $this->mcStatus->query(true);
 
@@ -67,36 +54,51 @@ EOT
             ) {
                 $this->setMessage('No response from Minecraft server query.');
                 $this->setCode(self::STATE_UNKNOWN);
-            } elseif ($response['player_count'] >= (int)$options['thresholdWarning']
-            ) {
+
+                return $this;
+            }
+
+            $playerCount = $response['player_count'];
+
+            if ($playerCount >= (int)$options['thresholdCritical']) {
                 $this->setMessage(
                     sprintf(
                         'CRITICAL - %1$u players currently logged in|users=%1$u',
-                        $response['success']
-                    )
-                );
-                $this->setCode(self::STATE_CRITICAL);
-            } elseif ($response['player_count'] >= (int)$options['thresholdWarning']
-            ) {
-                $this->setMessage(
-                    sprintf(
-                        'WARNING - %u players currently logged in|users=%1$u',
-                        $response['success']
-                    )
-                );
-                $this->setCode(self::STATE_WARNING);
-            } else {
-                $this->setMessage(
-                    sprintf(
-                        'OK - %u players currently logged in|users=%1$u',
                         $response['player_count']
                     )
                 );
-                $this->setCode(self::STATE_OK);
+                $this->setCode(self::STATE_CRITICAL);
+
+                return $this;
             }
+
+            if ($playerCount >= (int)$options['thresholdWarning']) {
+                $this->setMessage(
+                    sprintf(
+                        'WARNING - %u players currently logged in|users=%1$u',
+                        $response['player_count']
+                    )
+                );
+                $this->setCode(self::STATE_WARNING);
+
+                return $this;
+            }
+
+            $this->setMessage(
+                sprintf(
+                    'OK - %u players currently logged in|users=%1$u',
+                    $playerCount
+                )
+            );
+            $this->setCode(self::STATE_OK);
+
+            return $this;
+
         } catch (\Exception $e) {
             $this->setMessage('Error from Mcstat: ' . $e->getMessage());
             $this->setCode(self::STATE_UNKNOWN);
+
+            return $this;
         }
     }
-} 
+}

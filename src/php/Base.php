@@ -1,48 +1,34 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+namespace randomhost\Icinga\Check\Minecraft;
+
+use randomhost\Icinga\Check\Base as CheckBase;
+use randomhost\Minecraft\Status;
 
 /**
- * Minecraft class definition
+ * Base class for Minecraft Icinga check plugins.
  *
- * PHP version 5
- *
- * @category  Monitoring
- * @package   PHP_Icinga_Minecraft
  * @author    Ch'Ih-Yu <chi-yu@web.de>
- * @copyright 2014 random-host.com
+ * @copyright 2016 random-host.com
  * @license   http://www.debian.org/misc/bsd.license BSD License (3 Clause)
- * @link      https://pear.random-host.com/
- */
-namespace randomhost\Icinga\Checks\Minecraft;
-
-use randomhost\Icinga\Checks\Base as CheckBase;
-use winny\Mcstat\Status;
-
-/**
- * Base class for Minecraft Icinga plugins
- *
- * @category  Monitoring
- * @package   PHP_Icinga_Minecraft
- * @author    Ch'Ih-Yu <chi-yu@web.de>
- * @copyright 2014 random-host.com
- * @license   http://www.debian.org/misc/bsd.license  BSD License (3 Clause)
- * @version   Release: @package_version@
- * @link      https://pear.random-host.com/
+ * @link      http://github.random-host.com/icinga-check-minecraft/
  */
 abstract class Base extends CheckBase
 {
     /**
-     * Instance of winny\Mcstat\Status class
+     * Instance of \randomhost\Minecraft\Status.
      *
      * @var Status
      */
     protected $mcStatus = null;
 
     /**
-     * Constructor for this class.
+     * Constructor.
+     *
+     * @param Status $mcStatus \randomhost\Minecraft\Status instance.
      */
-    public function __construct()
+    public function __construct(Status $mcStatus)
     {
+        $this->mcStatus = $mcStatus;
 
         $this->setLongOptions(
             array(
@@ -73,11 +59,11 @@ Icinga plugin for checking Minecraft services.
 EOT
         );
     }
-    
+
     /**
      * Reads command line options and performs pre-run tasks.
      *
-     * @return void
+     * @return $this
      */
     protected function preRun()
     {
@@ -85,10 +71,10 @@ EOT
 
         $options = $this->getOptions();
 
-        // load Mcstat Status class
-        $this->mcStatus = new Status(
-            $options['host'],
-            $options['port']
-        );
+        $this->mcStatus
+            ->setHostname($options['host'])
+            ->setPort($options['port']);
+
+        return $this;
     }
-} 
+}
