@@ -1,7 +1,7 @@
 {
     "name": "randomhost/icinga-check-minecraft",
     "type": "library",
-    "description": "Provides provides Icinga check commands for Minecraft.",
+    "description": "Provides Icinga check commands for Minecraft.",
     "keywords": [
         "Icinga",
         "Nagios",
