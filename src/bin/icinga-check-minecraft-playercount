@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Checks the amount of players on a Minecraft server.
+ *
+ * @author    Ch'Ih-Yu <chi-yu@web.de>
+ * @copyright 2016 random-host.com
+ * @license   http://www.debian.org/misc/bsd.license  BSD License (3 Clause)
+ * @link      http://github.random-host.com/icinga-app/
+ */
+namespace randomhost\Icinga\Check\Minecraft;
+
+use randomhost\Minecraft\Status as MinecraftStatus;
+
+require_once realpath(__DIR__ . '/../../vendor') . '/autoload.php';
+
+$check = new PlayerCount(new MinecraftStatus());
+$check->run();
+
+echo $check->getMessage();
+exit($check->getCode());
