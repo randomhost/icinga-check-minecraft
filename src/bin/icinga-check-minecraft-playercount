@@ -6,15 +6,33 @@
  * @author    Ch'Ih-Yu <chi-yu@web.de>
  * @copyright 2016 random-host.com
  * @license   http://www.debian.org/misc/bsd.license  BSD License (3 Clause)
- * @link      http://github.random-host.com/icinga-app/
+ * @link      http://github.random-host.com/icinga-check-minecraft/
  */
 namespace randomhost\Icinga\Check\Minecraft;
 
 use randomhost\Minecraft\Status as MinecraftStatus;
 
-require_once realpath(__DIR__ . '/../../vendor') . '/autoload.php';
+// require autoload.php
+$paths = array(
+    __DIR__ . '/../../../../autoload.php',
+    __DIR__ . '/../../../vendor/autoload.php',
+    __DIR__ . '/../../vendor/autoload.php',
+);
+foreach ($paths as $autoload) {
+    if (file_exists($autoload)) {
+        require $autoload;
+        break;
+    }
+}
+unset($paths, $autoload);
 
 $check = new PlayerCount(new MinecraftStatus());
+$check->setOptions(
+    getopt(
+        $check->getShortOptions(),
+        $check->getLongOptions()
+    )
+);
 $check->run();
 
 echo $check->getMessage();

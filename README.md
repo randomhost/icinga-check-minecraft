@@ -28,6 +28,12 @@ use randomhost\Minecraft\Status as MinecraftStatus;
 $mcStat = new MinecraftStatus();
 
 $check = new PlayerCount($mcStat);
+$check->setOptions(
+    getopt(
+        $check->getShortOptions(),
+        $check->getLongOptions()
+    )
+);
 $check->run();
 
 echo $check->getMessage();
