@@ -8,7 +8,14 @@ This package provides Icinga check commands for Minecraft.
 Usage
 -----
 
-A basic approach at using this package could look like this:
+`PlayerCount` is currently the only available check but more may follow in the
+future.
+
+### Player count
+
+Checks the amount of players on the server.
+
+#### Usage example
 
 ```php
 <?php
@@ -16,7 +23,11 @@ namespace randomhost\Icinga\Check\Minecraft;
 
 require_once '/path/to/vendor/autoload.php';
 
-$check = new PlayerCount();
+use randomhost\Minecraft\Status as MinecraftStatus;
+
+$mcStat = new MinecraftStatus();
+
+$check = new PlayerCount($mcStat);
 $check->run();
 
 echo $check->getMessage();
@@ -26,18 +37,12 @@ exit($check->getCode());
 This will instantiate the `PlayerCount` class for the Minecraft server and check
 the amount of players currently connected to the server.
 
-`PlayerCount` is currently the only available check but more may follow in the
-future.
-
 #### Command line parameters
 
 | Parameter           | Description                             |
 | ------------------- | --------------------------------------- |
 | --host              | Minecraft server IP address or hostname |
-| --port              | JSONAPI port                            |
-| --user              | JSONAPI user                            |
-| --password          | JSONAPI password                        |
-| --salt              | JSONAPI salt                            |
+| --port              | Query port                              |
 | --thresholdWarning  | Threshold to trigger the WARNING state  |
 | --thresholdCritical | Threshold to trigger the CRITICAL state |
 
