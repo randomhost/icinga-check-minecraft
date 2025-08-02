@@ -1,4 +1,5 @@
 <?php
+
 namespace randomhost\Icinga\Check\Minecraft;
 
 use randomhost\Minecraft\Status;
@@ -7,30 +8,29 @@ use randomhost\Minecraft\Status;
  * Checks the player count of the Minecraft server.
  *
  * @author    Ch'Ih-Yu <chi-yu@web.de>
- * @copyright 2016 random-host.com
- * @license   http://www.debian.org/misc/bsd.license BSD License (3 Clause)
- * @link      http://github.random-host.com/icinga-check-minecraft/
+ * @copyright 2025 Random-Host.tv
+ * @license   https://opensource.org/licenses/BSD-3-Clause BSD License (3 Clause)
+ *
+ * @see      https://github.random-host.tv
  */
 class PlayerCount extends Base
 {
     /**
      * Constructor.
-     *
-     * @param Status $mcStatus \randomhost\Minecraft\Status instance.
      */
     public function __construct(Status $mcStatus)
     {
         parent::__construct($mcStatus);
 
         $this->setHelp(
-            <<<EOT
-Icinga plugin for checking Minecraft services.
+            <<<'EOT'
+                Icinga plugin for checking Minecraft services.
 
---host              Minecraft server IP address or hostname
---port              Query port
---thresholdWarning  Player threshold to trigger the WARNING state
---thresholdCritical Player threshold to trigger the CRITICAL state
-EOT
+                --host              Minecraft server IP address or hostname
+                --port              Query port
+                --thresholdWarning  Player threshold to trigger the WARNING state
+                --thresholdCritical Player threshold to trigger the CRITICAL state
+                EOT
         );
     }
 
@@ -41,7 +41,7 @@ EOT
      *
      * @return $this
      */
-    protected function check()
+    protected function check(): self
     {
         try {
             $options = $this->getOptions();
@@ -60,7 +60,7 @@ EOT
 
             $playerCount = $response['player_count'];
 
-            if ($playerCount >= (int)$options['thresholdCritical']) {
+            if ($playerCount >= (int) $options['thresholdCritical']) {
                 $this->setMessage(
                     sprintf(
                         'CRITICAL - %1$u players currently logged in|users=%1$u',
@@ -72,7 +72,7 @@ EOT
                 return $this;
             }
 
-            if ($playerCount >= (int)$options['thresholdWarning']) {
+            if ($playerCount >= (int) $options['thresholdWarning']) {
                 $this->setMessage(
                     sprintf(
                         'WARNING - %u players currently logged in|users=%1$u',
@@ -93,9 +93,8 @@ EOT
             $this->setCode(self::STATE_OK);
 
             return $this;
-
         } catch (\Exception $e) {
-            $this->setMessage('Error from Mcstat: ' . $e->getMessage());
+            $this->setMessage('Error from Mcstat: '.$e->getMessage());
             $this->setCode(self::STATE_UNKNOWN);
 
             return $this;

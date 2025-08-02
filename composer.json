@@ -7,7 +7,7 @@
         "Nagios",
         "Minecraft"
     ],
-    "homepage": "https://www.random-host.com",
+    "homepage": "https://github.random-host.tv",
     "license": "BSD-3-Clause",
     "authors": [
         {
@@ -17,18 +17,17 @@
     ],
     "config": {
         "platform": {
-            "php": "5.3.3"
+            "php": "8.2.29"
         }
     },
     "require": {
-        "php": ">=5.3.0",
-        "randomhost/icinga": "~0.2.1",
+        "php": ">=8.2.0",
+        "composer-runtime-api": "^2.2",
+        "randomhost/icinga": "~1.0.0",
         "randomhost/mcstat": "~0.0.2"
     },
     "require-dev": {
-        "behat/behat": "~2.0",
-        "phpunit/phpunit": "~4.0",
-        "phpspec/phpspec": "~2.4"
+        "phpunit/phpunit": "~9.0"
     },
     "bin": [
         "src/bin/icinga-check-minecraft-playercount"
@@ -37,5 +36,13 @@
         "psr-4": {
             "randomhost\\Icinga\\Check\\Minecraft\\": "src/php/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "randomhost\\Icinga\\Check\\Minecraft\\Tests\\": "src/tests/php"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
     }
 }

@@ -1,19 +1,23 @@
 <?php
-namespace randomhost\Icinga\Check\Minecraft;
 
+namespace randomhost\Icinga\Check\Minecraft\Tests;
+
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use randomhost\Icinga\Check\Minecraft\PlayerCount;
 use randomhost\Icinga\Plugin;
 use randomhost\Minecraft\Status;
-use RuntimeException;
 
 /**
  * Unit test for PlayerCount.
  *
  * @author    Ch'Ih-Yu <chi-yu@web.de>
- * @copyright 2016 random-host.com
- * @license   http://www.debian.org/misc/bsd.license  BSD License (3 Clause)
- * @link      http://github.random-host.com/icinga-check-minecraft/
+ * @copyright 2025 Random-Host.tv
+ * @license   https://opensource.org/licenses/BSD-3-Clause BSD License (3 Clause)
+ *
+ * @see      https://github.random-host.tv
  */
-class PlayerCountTest extends \PHPUnit_Framework_TestCase
+class PlayerCountTest extends TestCase
 {
     /**
      * Tests PlayerCount::run() without required parameters.
@@ -48,22 +52,22 @@ class PlayerCountTest extends \PHPUnit_Framework_TestCase
         $status = $this->getMinecraftStatusMock('127.0.0.1', 9876);
 
         $expectedOutput
-            = <<<EOT
-Icinga plugin for checking Minecraft services.
+            = <<<'EOT'
+                Icinga plugin for checking Minecraft services.
 
---host              Minecraft server IP address or hostname
---port              Query port
---thresholdWarning  Player threshold to trigger the WARNING state
---thresholdCritical Player threshold to trigger the CRITICAL state
-EOT;
+                --host              Minecraft server IP address or hostname
+                --port              Query port
+                --thresholdWarning  Player threshold to trigger the WARNING state
+                --thresholdCritical Player threshold to trigger the CRITICAL state
+                EOT;
         $playerCount = new PlayerCount($status);
 
         $this->assertSame(
             $playerCount,
             $playerCount->setOptions(
-                array(
-                    'help' => ''
-                )
+                [
+                    'help' => '',
+                ]
             )
         );
 
@@ -95,19 +99,20 @@ EOT;
             ->with(true)
             ->will(
                 $this->returnValue(
-                    array()
+                    []
                 )
-            );
+            )
+        ;
 
         $playerCount = new PlayerCount($status);
 
         $playerCount->setOptions(
-            array(
+            [
                 'host' => '127.0.0.1',
                 'port' => 9876,
                 'thresholdWarning' => 5,
-                'thresholdCritical' => 10
-            )
+                'thresholdCritical' => 10,
+            ]
         );
 
         $this->assertSame(
@@ -138,21 +143,22 @@ EOT;
             ->with(true)
             ->will(
                 $this->throwException(
-                    new RuntimeException(
+                    new \RuntimeException(
                         'Something went horribly wrong'
                     )
                 )
-            );
+            )
+        ;
 
         $playerCount = new PlayerCount($status);
 
         $playerCount->setOptions(
-            array(
+            [
                 'host' => '127.0.0.1',
                 'port' => 9876,
                 'thresholdWarning' => 5,
-                'thresholdCritical' => 10
-            )
+                'thresholdCritical' => 10,
+            ]
         );
 
         $this->assertSame(
@@ -183,21 +189,22 @@ EOT;
             ->with(true)
             ->will(
                 $this->returnValue(
-                    array(
-                        'player_count' => 0
-                    )
+                    [
+                        'player_count' => 0,
+                    ]
                 )
-            );
+            )
+        ;
 
         $playerCount = new PlayerCount($status);
 
         $playerCount->setOptions(
-            array(
+            [
                 'host' => '127.0.0.1',
                 'port' => 9876,
                 'thresholdWarning' => 5,
-                'thresholdCritical' => 10
-            )
+                'thresholdCritical' => 10,
+            ]
         );
 
         $this->assertSame(
@@ -228,21 +235,22 @@ EOT;
             ->with(true)
             ->will(
                 $this->returnValue(
-                    array(
-                        'player_count' => 15
-                    )
+                    [
+                        'player_count' => 15,
+                    ]
                 )
-            );
+            )
+        ;
 
         $playerCount = new PlayerCount($status);
 
         $playerCount->setOptions(
-            array(
+            [
                 'host' => '127.0.0.1',
                 'port' => 9876,
                 'thresholdWarning' => 5,
-                'thresholdCritical' => 10
-            )
+                'thresholdCritical' => 10,
+            ]
         );
 
         $this->assertSame(
@@ -273,21 +281,22 @@ EOT;
             ->with(true)
             ->will(
                 $this->returnValue(
-                    array(
-                        'player_count' => 6
-                    )
+                    [
+                        'player_count' => 6,
+                    ]
                 )
-            );
+            )
+        ;
 
         $playerCount = new PlayerCount($status);
 
         $playerCount->setOptions(
-            array(
+            [
                 'host' => '127.0.0.1',
                 'port' => 9876,
                 'thresholdWarning' => 5,
-                'thresholdCritical' => 10
-            )
+                'thresholdCritical' => 10,
+            ]
         );
 
         $this->assertSame(
@@ -312,16 +321,15 @@ EOT;
      * @param string $host Server host name.
      * @param int    $port Server port.
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|Status
+     * @return MockObject|Status
      */
     protected function getMinecraftStatusMock($host, $port)
     {
-        $status = $this
-            ->getMockBuilder('randomhost\\Minecraft\\Status')
-            ->setConstructorArgs(array($host, $port))
-            ->setMethods(array('query'))
-            ->getMock();
-
-        return $status;
+        return $this
+            ->getMockBuilder('randomhost\Minecraft\Status')
+            ->setConstructorArgs([$host, $port])
+            ->onlyMethods(['query'])
+            ->getMock()
+        ;
     }
 }
